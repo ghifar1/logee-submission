@@ -1,0 +1,31 @@
+FROM golang
+
+ADD . /go/src/github.com/telkomdev/indihome/backend
+
+WORKDIR /go/src/github.com/telkomdev/indihome
+
+RUN go get github.com/tools/godep
+
+RUN godep restore
+
+RUN go install github.com/telkomdev/indihome
+
+ENTRYPOINT /go/bin/indihome
+
+LISTEN 80
+
+// -- jawaban -- //
+kode di atas merupakan kode dockerfile yang biasa digunakan di docker compose.
+berdasarkan kode di atas terdapat kesalahan pada workdir /go/src/github.com/telkomdev/indihome,
+karena project tsb berada pada path /go/src/github.com/telkomdev/indihome/backend, jika diteruskan maka
+module godep tidak akan masuk kedalam go mod dari folder backend.
+maka yang benar:
+
+WORKDIR /go/src/github.com/telkomdev/indihome/backend
+
+sehingga saat RUN go install github.com/telkomdev/indihome agar godep dapat diinstall pada project backend.,
+
+kemudian juga terjadi kesalahan pada ENTRYPOINT /go/bin/indihome, 
+karena project tsb belum dicompiled maka akan terjadi error
+
+RUN go build github.com/telkomdev/indihome/backend
